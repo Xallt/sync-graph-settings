@@ -14,14 +14,15 @@ export default class SyncGraphPlugin extends Plugin {
 	async syncGlobalToLocal() {
 		const configDir = app.vault.configDir;
 		const graphConfigPath = path.join(configDir, 'graph.json');
-		const graphConfigFile = this.app.vault.getAbstractFileByPath(graphConfigPath);
-		if (graphConfigFile instanceof TFile) {
-			const graphConfigJson = await readFile(graphConfigFile.path, {encoding: 'utf-8'});
-			const graphConfig = JSON.parse(graphConfigJson);
-			this.getLocalGraphLeaves().forEach((leaf) => {
-				this.setColorGroups(leaf, graphConfig.colorGroups);
-			})
-		}
+
+		// this.app.vault.getAbstractFileByPath('.obsidian/graph.json') would return null
+		// So we're doing it the less safe way
+		const graphConfigJson = await this.app.vault.adapter.read(graphConfigPath);
+		const graphConfig = JSON.parse(graphConfigJson);
+		const graphColorGroups = graphConfig.colorGroups;
+		this.getLocalGraphLeaves().forEach((leaf) => {
+			this.setColorGroups(leaf, graphColorGroups);
+		})
 	}
 
 	getLocalGraphLeaves() {
