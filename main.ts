@@ -37,7 +37,7 @@ export default class SyncGraphPlugin extends Plugin {
 	}
 	
 	setColorGroups(localGraphLeaf: WorkspaceLeaf, colorGroups: any) {
-		var viewState = localGraphLeaf.getViewState();
+		const viewState = localGraphLeaf.getViewState();
 		viewState.state.options.colorGroups = colorGroups;
 		localGraphLeaf.setViewState(viewState);
 	}
