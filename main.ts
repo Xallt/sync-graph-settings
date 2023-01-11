@@ -10,7 +10,7 @@ export default class SyncGraphPlugin extends Plugin {
 	}
 
 	async syncGlobalToLocal() {
-		const configDir = app.vault.configDir;
+		const configDir = this.app.vault.configDir;
 		const graphConfigPath = normalizePath(configDir + '/graph.json');
 
 		// this.app.vault.getAbstractFileByPath('.obsidian/graph.json') would return null
