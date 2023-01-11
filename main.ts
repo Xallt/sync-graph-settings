@@ -1,6 +1,4 @@
-import { Plugin, WorkspaceLeaf, TFile, normalizePath} from 'obsidian';
-import * as path from "path";
-import {readFile} from "fs/promises";
+import { Plugin, WorkspaceLeaf, normalizePath} from 'obsidian';
 
 export default class SyncGraphPlugin extends Plugin {
 	async onload() {
