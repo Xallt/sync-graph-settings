@@ -1,7 +1,7 @@
 {
 	"id": "sync-graph-settings",
 	"name": "Sync Graph Settings",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin for syncing graph settings (like Color Groups) to Local Graphs",
 	"author": "xallt",
