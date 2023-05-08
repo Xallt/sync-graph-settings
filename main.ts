@@ -4,7 +4,7 @@ export default class SyncGraphPlugin extends Plugin {
 	async onload() {
 		this.addCommand({
 			id: "sync-graph-colorgroups-to-localgraph",
-			name: "Sync Graph Groups Settings to Local Graph",
+			name: "Sync Graph Settings to Local Graph",
 			callback: async () => { await this.syncGlobalToLocal() }
 		})
 	}
