@@ -6,5 +6,5 @@
 	"description": "This is a plugin for syncing graph settings (like Color Groups) to Local Graphs",
 	"author": "xallt",
 	"authorUrl": "github.com/Xallt",
-	"isDesktopOnly": true
+	"isDesktopOnly": false
 }
