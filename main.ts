@@ -43,7 +43,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Default depth").addSlider((value) =>
 				value
-					.setLimits(1, 10, 1)
+					.setLimits(1, 5, 1)
 					.setValue(this.plugin.settings.defaultDepth)
 					.onChange(async (value) => {
 						this.plugin.settings.defaultDepth = value;
