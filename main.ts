@@ -1,38 +1,87 @@
-import { Plugin, WorkspaceLeaf, normalizePath, PluginSettingTab , Setting} from 'obsidian';
+import { Plugin, WorkspaceLeaf, normalizePath, PluginSettingTab, Setting } from 'obsidian';
 
 interface SyncGraphPluginSettings {
+	autoSync: boolean;
 	defaultDepth: number;
+	defaultIncomingLinks: boolean;
+	defaultOutgoingLinks: boolean;
+	defaultNeighborLinks: boolean;
 }
 
 const DEFAULT_SETTINGS: SyncGraphPluginSettings = {
-	defaultDepth: 1
+	autoSync: false,
+	defaultDepth: 1,
+	defaultIncomingLinks: true,
+	defaultOutgoingLinks: true,
+	defaultNeighborLinks: true
 }
 
 export class SyncGraphSettingTab extends PluginSettingTab {
-  plugin: SyncGraphPlugin;
+	plugin: SyncGraphPlugin;
 
-  constructor(app: App, plugin: SyncGraphPlugin) {
-    super(app, plugin);
-    this.plugin = plugin;
-  }
+	constructor(app: App, plugin: SyncGraphPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
 
-  display(): void {
-    let { containerEl } = this;
+	display(): void {
+		let { containerEl } = this;
 
-    containerEl.empty();
+		containerEl.empty();
 
-    new Setting(containerEl)
-      .setName("Default depth")
-      .addText((text) =>
-        text
-          .setPlaceholder("1")
-          .setValue((this.plugin.settings.defaultDepth || 1).toString())
-          .onChange(async (value) => {
-            this.plugin.settings.defaultDepth = Number.parseInt(value) || 1;
-            await this.plugin.saveSettings();
-          })
-      );
-  }
+		new Setting(containerEl)
+			.setName("Auto Sync")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoSync)
+					.onChange(async (value) => {
+						this.plugin.settings.autoSync = value;
+						await this.plugin.saveSettings();
+					})
+		);
+
+		new Setting(containerEl)
+			.setName("Default depth").addSlider((value) =>
+				value
+					.setLimits(1, 10, 1)
+					.setValue(this.plugin.settings.defaultDepth)
+					.onChange(async (value) => {
+						this.plugin.settings.defaultDepth = value;
+						await this.plugin.saveSettings();
+					})
+					.setDynamicTooltip()
+			);
+		new Setting(containerEl)
+			.setName("Default Incoming Links")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.defaultIncomingLinks)
+					.onChange(async (value) => {
+						this.plugin.settings.defaultIncomingLinks = value;
+						await this.plugin.saveSettings();
+					})
+		);
+		new Setting(containerEl)
+			.setName("Default Outgoing Links")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.defaultOutgoingLinks)
+					.onChange(async (value) => {
+						this.plugin.settings.defaultOutgoingLinks = value;
+						await this.plugin.saveSettings();
+					})
+		);
+		new Setting(containerEl)
+			.setName("Default Neighbor Links")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.defaultNeighborLinks)
+					.onChange(async (value) => {
+						this.plugin.settings.defaultNeighborLinks = value;
+						await this.plugin.saveSettings();
+					})
+		);
+	}
 }
 
 
@@ -49,6 +98,13 @@ export default class SyncGraphPlugin extends Plugin {
 			name: "Sync Graph Settings to Local Graph",
 			callback: async () => { await this.syncGlobalToLocal() }
 		})
+
+		this.app.workspace.on('active-leaf-change', async () => {
+			if (this.settings.autoSync) {
+				await this.syncGlobalToLocal();
+			}
+		}
+		);
 	}
 
 	async loadSettings() {
@@ -73,12 +129,16 @@ export default class SyncGraphPlugin extends Plugin {
 	getLocalGraphLeaves() {
 		return this.app.workspace.getLeavesOfType('localgraph');
 	}
-	
+
 	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any) {
 		const viewState = localGraphLeaf.getViewState();
 		viewState.state.options.colorGroups = colorGroups;
 		viewState.state.options.search = searchFilters;
+
 		viewState.state.options.localJumps = this.settings.defaultDepth;
+		viewState.state.options.localBacklinks = this.settings.defaultIncomingLinks;
+		viewState.state.options.localForelinks = this.settings.defaultOutgoingLinks;
+		viewState.state.options.localInterlinks = this.settings.defaultNeighborLinks;
 		localGraphLeaf.setViewState(viewState);
 	}
 
