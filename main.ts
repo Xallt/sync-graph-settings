@@ -1,4 +1,4 @@
-import { Plugin, WorkspaceLeaf, normalizePath, PluginSettingTab, Setting } from 'obsidian';
+import { Plugin, WorkspaceLeaf, normalizePath, PluginSettingTab, Setting, App } from 'obsidian';
 
 interface SyncGraphPluginSettings {
 	autoSync: boolean;
