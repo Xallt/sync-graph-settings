@@ -121,8 +121,9 @@ export default class SyncGraphPlugin extends Plugin {
 		const graphConfig = JSON.parse(graphConfigJson);
 		const graphColorGroups = graphConfig.colorGroups;
 		const searchFilters = graphConfig.search;
+		const closeSettings = graphConfig.close;
 		this.getLocalGraphLeaves().forEach((leaf) => {
-			this.setSettings(leaf, graphColorGroups, searchFilters);
+			this.setSettings(leaf, graphColorGroups, searchFilters, closeSettings);
 		})
 	}
 
@@ -130,10 +131,11 @@ export default class SyncGraphPlugin extends Plugin {
 		return this.app.workspace.getLeavesOfType('localgraph');
 	}
 
-	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any) {
+	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any, closeSettings: any) {
 		const viewState = localGraphLeaf.getViewState();
 		viewState.state.options.colorGroups = colorGroups;
 		viewState.state.options.search = searchFilters;
+		viewState.state.options.close = closeSettings;
 
 		viewState.state.options.localJumps = this.settings.defaultDepth;
 		viewState.state.options.localBacklinks = this.settings.defaultIncomingLinks;
