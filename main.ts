@@ -38,7 +38,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 						this.plugin.settings.autoSync = value;
 						await this.plugin.saveSettings();
 					})
-		);
+			);
 
 		new Setting(containerEl)
 			.setName("Default depth").addSlider((value) =>
@@ -60,7 +60,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 						this.plugin.settings.defaultIncomingLinks = value;
 						await this.plugin.saveSettings();
 					})
-		);
+			);
 		new Setting(containerEl)
 			.setName("Default Outgoing Links")
 			.addToggle((toggle) =>
@@ -70,7 +70,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 						this.plugin.settings.defaultOutgoingLinks = value;
 						await this.plugin.saveSettings();
 					})
-		);
+			);
 		new Setting(containerEl)
 			.setName("Default Neighbor Links")
 			.addToggle((toggle) =>
@@ -80,7 +80,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 						this.plugin.settings.defaultNeighborLinks = value;
 						await this.plugin.saveSettings();
 					})
-		);
+			);
 	}
 }
 
@@ -122,8 +122,10 @@ export default class SyncGraphPlugin extends Plugin {
 		const graphColorGroups = graphConfig.colorGroups;
 		const searchFilters = graphConfig.search;
 		const closeSettings = graphConfig.close;
+		const lineSizeMultiplier = graphConfig.lineSizeMultiplier;
+		const nodeSizeMultiplier = graphConfig.nodeSizeMultiplier;
 		this.getLocalGraphLeaves().forEach((leaf) => {
-			this.setSettings(leaf, graphColorGroups, searchFilters, closeSettings);
+			this.setSettings(leaf, graphColorGroups, searchFilters, closeSettings, lineSizeMultiplier, nodeSizeMultiplier);
 		})
 	}
 
@@ -131,11 +133,13 @@ export default class SyncGraphPlugin extends Plugin {
 		return this.app.workspace.getLeavesOfType('localgraph');
 	}
 
-	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any, closeSettings: any) {
+	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any, closeSettings: any, lineSizeMultiplier: any, nodeSizeMultiplier: any) {
 		const viewState = localGraphLeaf.getViewState();
 		viewState.state.options.colorGroups = colorGroups;
 		viewState.state.options.search = searchFilters;
 		viewState.state.options.close = closeSettings;
+		viewState.state.options.lineSizeMultiplier = lineSizeMultiplier;
+		viewState.state.options.nodeSizeMultiplier = nodeSizeMultiplier;
 
 		viewState.state.options.localJumps = this.settings.defaultDepth;
 		viewState.state.options.localBacklinks = this.settings.defaultIncomingLinks;
