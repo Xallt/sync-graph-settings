@@ -6,6 +6,7 @@ interface SyncGraphPluginSettings {
 	defaultIncomingLinks: boolean;
 	defaultOutgoingLinks: boolean;
 	defaultNeighborLinks: boolean;
+	defaultShowTags: boolean;
 }
 
 const DEFAULT_SETTINGS: SyncGraphPluginSettings = {
@@ -13,7 +14,8 @@ const DEFAULT_SETTINGS: SyncGraphPluginSettings = {
 	defaultDepth: 1,
 	defaultIncomingLinks: true,
 	defaultOutgoingLinks: true,
-	defaultNeighborLinks: true
+	defaultNeighborLinks: true,
+	defaultShowTags: true
 }
 
 export class SyncGraphSettingTab extends PluginSettingTab {
@@ -31,6 +33,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Auto Sync")
+			.setDesc("Automatically sync graph settings to local graph when active leaf changes")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.autoSync)
@@ -41,7 +44,9 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Default depth").addSlider((value) =>
+			.setName("Default depth")
+			.setDesc("Default depth to set for local graph")
+			.addSlider((value) =>
 				value
 					.setLimits(1, 5, 1)
 					.setValue(this.plugin.settings.defaultDepth)
@@ -53,6 +58,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 			);
 		new Setting(containerEl)
 			.setName("Default Incoming Links")
+			.setDesc("Default \"Incoming Links\" flag to set for local graph")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.defaultIncomingLinks)
@@ -63,6 +69,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 			);
 		new Setting(containerEl)
 			.setName("Default Outgoing Links")
+			.setDesc("Default \"Outgoing Links\" flag to set for local graph")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.defaultOutgoingLinks)
@@ -73,6 +80,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 			);
 		new Setting(containerEl)
 			.setName("Default Neighbor Links")
+			.setDesc("Default \"Neighbor Links\" flag to set for local graph")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.defaultNeighborLinks)
@@ -80,7 +88,7 @@ export class SyncGraphSettingTab extends PluginSettingTab {
 						this.plugin.settings.defaultNeighborLinks = value;
 						await this.plugin.saveSettings();
 					})
-			);
+		);
 	}
 }
 
@@ -124,8 +132,9 @@ export default class SyncGraphPlugin extends Plugin {
 		const closeSettings = graphConfig.close;
 		const lineSizeMultiplier = graphConfig.lineSizeMultiplier;
 		const nodeSizeMultiplier = graphConfig.nodeSizeMultiplier;
+		const showTags = graphConfig.showTags;
 		this.getLocalGraphLeaves().forEach((leaf) => {
-			this.setSettings(leaf, graphColorGroups, searchFilters, closeSettings, lineSizeMultiplier, nodeSizeMultiplier);
+			this.setSettings(leaf, graphColorGroups, searchFilters, closeSettings, lineSizeMultiplier, nodeSizeMultiplier, showTags);
 		})
 	}
 
@@ -133,14 +142,14 @@ export default class SyncGraphPlugin extends Plugin {
 		return this.app.workspace.getLeavesOfType('localgraph');
 	}
 
-	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any, closeSettings: any, lineSizeMultiplier: any, nodeSizeMultiplier: any) {
+	setSettings(localGraphLeaf: WorkspaceLeaf, colorGroups: any, searchFilters: any, closeSettings: any, lineSizeMultiplier: any, nodeSizeMultiplier: any, showTags: boolean) {
 		const viewState = localGraphLeaf.getViewState();
 		viewState.state.options.colorGroups = colorGroups;
 		viewState.state.options.search = searchFilters;
 		viewState.state.options.close = closeSettings;
 		viewState.state.options.lineSizeMultiplier = lineSizeMultiplier;
 		viewState.state.options.nodeSizeMultiplier = nodeSizeMultiplier;
-
+		viewState.state.options.showTags = showTags;
 		viewState.state.options.localJumps = this.settings.defaultDepth;
 		viewState.state.options.localBacklinks = this.settings.defaultIncomingLinks;
 		viewState.state.options.localForelinks = this.settings.defaultOutgoingLinks;
